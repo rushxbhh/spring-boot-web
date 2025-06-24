@@ -1,6 +1,9 @@
 package com.springbootweb.spring.boot.web.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.springbootweb.spring.boot.web.entities.SalaryEntity;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,6 +11,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -15,7 +22,7 @@ import java.time.LocalDate;
 
 public class EmployeeDTO {
 
-    private long id;
+    private Long employeeid;
 
     @NotBlank( message = "Name can not be blank")
     @Size(min = 3 ,max = 10, message = "must be in this range")
@@ -27,15 +34,11 @@ public class EmployeeDTO {
 
     @NotNull(message = "age must be filled")
     @Min(value = 18 , message = "above than 18")
-    @Max(value = 60 , message =  "must below than 18")
+    @Max(value = 60 , message =  "must below than 60")
     private int age;
 
-    @NotNull(message = "salary must be filled")
-    @Positive(message = "must be in positive number")
-    @Digits(integer = 5 , fraction = 2, message = "must be in this range")
-    @DecimalMax( value = "10000.99")
-    @DecimalMin( value = "1000.99")
-    private Double salary;
+
+   private SalaryDTO latestsalary;
 
     @JsonProperty(value = "isactive")
     private boolean isactive;
@@ -44,9 +47,11 @@ public class EmployeeDTO {
     private LocalDate joining;
 
     @NotBlank( message = "role must be filled")
-    @Pattern(regexp = "^(ADMIN|USER)$" , message = " must be admin or usern ")
     private String role;
 
+    private List<SalaryDTO> salaries;
+
+    private AttendanceDTO todaysAttendance;
 
 
 }

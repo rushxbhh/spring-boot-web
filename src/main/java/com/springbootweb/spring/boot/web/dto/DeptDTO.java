@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -19,7 +20,7 @@ import java.time.LocalDate;
 
 public class DeptDTO {
 
-    private long id;
+    private Long departmentid;
 
     @NotBlank( message = " title can not be blank")
     @Pattern(regexp = "^(HR|IT|social|servents)$" , message = " must be in these titles")
@@ -28,8 +29,11 @@ public class DeptDTO {
     @JsonProperty(value = "isactive")
     private  boolean isactive;
 
+    private EmployeeDTO manager;
 
     @PastOrPresent(message = "should not be in the future")
     private LocalDate createdAt;
+
+    private Set<EmployeeDTO> workers;
 
 }

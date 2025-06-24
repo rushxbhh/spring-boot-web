@@ -24,19 +24,20 @@ public class EmployeeController {
     }
 
 
-    @GetMapping(path = "/{employeeiD}")
-   public ResponseEntity<EmployeeDTO> getEmployeeID(@PathVariable(name = "employeeiD") long id){
+    @GetMapping(path = "/{employeeid}")
+   public ResponseEntity<EmployeeDTO> getEmployeeID(@PathVariable(name = "employeeid") long id) {
 
-         Optional<EmployeeDTO> employeeDTO = employeeService.getEmployeeID(id);
-         return employeeDTO.map(employeeDTO1 -> ResponseEntity.ok(employeeDTO1))
-                 .orElseThrow(() -> new NoSuchElementException(" employee not found with id" + id));
+        EmployeeDTO employeeDTO = employeeService.getEmployeeID(id);
+        return new ResponseEntity<>(employeeDTO, HttpStatus.OK);
     }
 
 
     @GetMapping
-    public ResponseEntity<List<EmployeeDTO>> getallEmp()
+    public ResponseEntity<List<EmployeeDTO>> getallEmp( @RequestParam(defaultValue = "0") int page,
+                                                        @RequestParam(defaultValue = "5") int size,
+                                                        @RequestParam(defaultValue = "employeeid") String sortby)
     {
-        return ResponseEntity.ok(employeeService.getallEmp());
+        return ResponseEntity.ok(employeeService.getallEmp(page , size , sortby));
     }
 
 
@@ -47,24 +48,24 @@ public class EmployeeController {
     }
 
 
-    @PutMapping(path = "/{employeeiD}")
-    public ResponseEntity<EmployeeDTO> updateEmployeebyid(@RequestBody @Valid  EmployeeDTO employeeDTO, @PathVariable(name = "employeeiD") Long id)
+    @PutMapping(path = "/{employeeid}")
+    public ResponseEntity<EmployeeDTO> updateEmployeebyid(@RequestBody @Valid  EmployeeDTO employeeDTO, @PathVariable(name = "employeeid") Long id)
     {
       return ResponseEntity.ok(employeeService.updateEmployeebyid(employeeDTO , id));
     }
 
 
-    @DeleteMapping(path = "/{employeeiD}" )
-    public ResponseEntity<Boolean> deleteEmployeeid(@PathVariable Long employeeiD)
+    @DeleteMapping(path = "/{employeeid}" )
+    public ResponseEntity<Boolean> deleteEmployeeid(@PathVariable Long employeeid)
     {
-        Boolean gotdlt = employeeService.deleteEmployeeiD(employeeiD);
+        Boolean gotdlt = employeeService.deleteEmployeeiD(employeeid);
         if(gotdlt) return  ResponseEntity.ok(true);
         return ResponseEntity.notFound().build();
     }
 
 
-    @PatchMapping(path = "/{employeeiD}" )
-    public ResponseEntity<EmployeeDTO> updateEmployeeid(@RequestBody Map< String, Object> updates , @PathVariable(name = "employeeiD") Long id)
+    @PatchMapping(path = "/{employeeid}" )
+    public ResponseEntity<EmployeeDTO> updateEmployeeid(@RequestBody Map< String, Object> updates , @PathVariable(name = "employeeid") Long id)
     {
         EmployeeDTO employeeDTO =employeeService.updateEmployeeid(id , updates);
         if(employeeDTO == null) return ResponseEntity.notFound().build();
