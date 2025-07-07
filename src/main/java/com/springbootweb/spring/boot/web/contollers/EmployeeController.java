@@ -6,13 +6,18 @@ import java.util.Optional;
 
 import com.springbootweb.spring.boot.web.dto.EmployeeDTO;
 import com.springbootweb.spring.boot.web.entities.EmployeeEntity;
+import com.springbootweb.spring.boot.web.entities.User;
 import com.springbootweb.spring.boot.web.services.EmployeeService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping(path = "/employees")
 public class EmployeeController {
@@ -25,8 +30,10 @@ public class EmployeeController {
 
 
     @GetMapping(path = "/{employeeid}")
-   public ResponseEntity<EmployeeDTO> getEmployeeID(@PathVariable(name = "employeeid") long id) {
+   public ResponseEntity<EmployeeDTO> getEmployeeID(@PathVariable(name = "employeeid") long id , @AuthenticationPrincipal User user) {
 
+      //  User user =(User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        log.info("user" , user);
         EmployeeDTO employeeDTO = employeeService.getEmployeeID(id);
         return new ResponseEntity<>(employeeDTO, HttpStatus.OK);
     }

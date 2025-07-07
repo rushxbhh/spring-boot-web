@@ -10,7 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Getter
@@ -30,9 +30,6 @@ public class DeptDTO {
     private  boolean isactive;
 
     private EmployeeDTO manager;
-
-    @PastOrPresent(message = "should not be in the future")
-    private LocalDate createdAt;
 
     private Set<EmployeeDTO> workers;
 

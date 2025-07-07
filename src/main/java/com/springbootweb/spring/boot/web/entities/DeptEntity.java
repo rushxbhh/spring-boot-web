@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Set;
 
@@ -16,7 +16,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table( name = "departments")
-public class DeptEntity {
+public class DeptEntity extends  AuditableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,7 +31,7 @@ public class DeptEntity {
     @JoinColumn(name = "manager_id")
     private EmployeeEntity manager;
 
-    private LocalDate createdAt;
+
     @OneToMany(mappedBy = "workerdepartment")
     @JsonIgnore
     private Set<EmployeeEntity> workers;

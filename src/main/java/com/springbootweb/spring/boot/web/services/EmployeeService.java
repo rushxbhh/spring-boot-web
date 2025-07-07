@@ -1,9 +1,12 @@
 package com.springbootweb.spring.boot.web.services;
 
+import com.springbootweb.spring.boot.web.dto.AttendanceDTO;
 import com.springbootweb.spring.boot.web.dto.EmployeeDTO;
 import com.springbootweb.spring.boot.web.dto.SalaryDTO;
+import com.springbootweb.spring.boot.web.entities.AttendanceEntity;
 import com.springbootweb.spring.boot.web.entities.EmployeeEntity;
 import com.springbootweb.spring.boot.web.entities.SalaryEntity;
+import com.springbootweb.spring.boot.web.repositories.AttendanceRepository;
 import com.springbootweb.spring.boot.web.repositories.EmployeeRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -27,12 +30,14 @@ public class EmployeeService {
     private  final EmployeeRepository employeeRepository;
     private  final ModelMapper modelMapper;
     private final SalaryRepository salaryRepository;
+    private final AttendanceRepository attendanceRepository;
 
-    public EmployeeService(EmployeeRepository employeeRepository, ModelMapper modelMapper, SalaryRepository salaryRepository) {
+    public EmployeeService(EmployeeRepository employeeRepository, ModelMapper modelMapper, SalaryRepository salaryRepository, AttendanceRepository attendanceRepository) {
         this.employeeRepository = employeeRepository;
         this.modelMapper = modelMapper;
 
         this.salaryRepository = salaryRepository;
+        this.attendanceRepository = attendanceRepository;
     }
     public EmployeeDTO getEmployeeID(Long employeeid) {
         EmployeeEntity employee = employeeRepository.findById(employeeid)
@@ -47,10 +52,19 @@ public class EmployeeService {
             salaryDTO.setEmployeeid(employeeid);
             employeeDTO.setLatestsalary(salaryDTO);
         }
-
+        else {
+            employeeDTO.setLatestsalary(null);
+        }
+        Optional<AttendanceEntity> todaysAttendance = attendanceRepository.findTodaysAttendanceByemployeeid(employeeid);
+        if (todaysAttendance.isPresent()) {
+            AttendanceDTO attendanceDTO = modelMapper.map(todaysAttendance.get(), AttendanceDTO.class);
+            attendanceDTO.setEmployeeid(employeeid);
+            employeeDTO.setTodaysAttendance(attendanceDTO); // Shows if present/absent today
+        } else {
+            employeeDTO.setTodaysAttendance(null); // No attendance marked for today
+        }
         return employeeDTO;
     }
-
 
     public List<EmployeeDTO> getallEmp(int page, int size , String sortby)
     {

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Add Employee</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-person-plus"></i> Add New Employee
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/employee/add}" th:object="${employee}" method="post">
+                        <div class="row">
+                            <!-- Personal Information -->
+                            <div class="col-md-6">
+                                <h6 class="text-primary border-bottom pb-2 mb-3">Personal Information</h6>
+
+                                <div class="mb-3">
+                                    <label for="name" class="form-label required">Full Name</label>
+                                    <input type="text"
+                                           class="form-control"
+                                           id="name"
+                                           th:field="*{name}"
+                                           th:classappend="${#fields.hasErrors('name')} ? 'is-invalid' : ''"
+                                           required>
+                                    <div th:if="${#fields.hasErrors('name')}" class="invalid-feedback">
+                                        <span th:errors="*{name}">Name error</span>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="email" class="form-label required">Email Address</label>
+                                    <input type="email"
+                                           class="form-control"
+                                           id="email"
+                                           th:field="*{email}"
+                                           th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''"
+                                           required>
+                                    <div th:if="${#fields.hasErrors('email')}" class="invalid-feedback">
+                                        <span th:errors="*{email}">Email error</span>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="age" class="form-label required">Age</label>
+                                    <input type="number"
+                                           class="form-control"
+                                           id="age"
+                                           th:field="*{age}"
+                                           th:classappend="${#fields.hasErrors('age')} ? 'is-invalid' : ''"
+                                           min="18" max="100" required>
+                                    <div th:if="${#fields.hasErrors('age')}" class="invalid-feedback">
+                                        <span th:errors="*{age}">Age error</span>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="joiningDate" class="form-label required">Joining Date</label>
+                                    <input type="date"
+                                           class="form-control"
+                                           id="joiningDate"
+                                           th:field="*{joiningDate}"
+                                           th:classappend="${#fields.hasErrors('joiningDate')} ? 'is-invalid' : ''"
+                                           required>
+                                    <div th:if="${#fields.hasErrors('joiningDate')}" class="invalid-feedback">
+                                        <span th:errors="*{joiningDate}">Joining date error</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Work Information -->
+                            <div class="col-md-6">
+                                <h6 class="text-primary border-bottom pb-2 mb-3">Work Information</h6>
+
+                                <div class="mb-3">
+                                    <label for="department" class="form-label required">Department</label>
+                                    <select class="form-select"
+                                            id="department"
+                                            th:field="*{department.id}"
+                                            th:classappend="${#fields.hasErrors('department')} ? 'is-invalid' : ''"
+                                            required>
+                                        <option value="">Select Department</option>
+                                        <option th:each="dept : ${departments}"
+                                                th:value="${dept.id}"
+                                                th:text="${dept.title}">Department</option>
+                                    </select>
+                                    <div th:if="${#fields.hasErrors('department')}" class="invalid-feedback">
+                                        <span th:errors="*{department}">Department error</span>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="role" class="form-label required">Role/Position</label>
+                                    <input type="text"
+                                           class="form-control"
+                                           id="role"
+                                           th:field="*{role}"
+                                           th:classappend="${#fields.hasErrors('role')} ? 'is-invalid' : ''"
+                                           placeholder="e.g., Senior Developer, Manager"
+                                           required>
+                                    <div th:if="${#fields.hasErrors('role')}" class="invalid-feedback">
+                                        <span th:errors="*{role}">Role error</span>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="salary" class="form-label">Initial Salary</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">₹</span>
+                                        <input type="number"
+                                               class="form-control"
+                                               id="salary"
+                                               th:field="*{salary}"
+                                               th:classappend="${#fields.hasErrors('salary')} ? 'is-invalid' : ''"
+                                               min="0" step="0.01"
+                                               placeholder="50000.00">
+                                        <div th:if="${#fields.hasErrors('salary')}" class="invalid-feedback">
+                                            <span th:errors="*{salary}">Salary error</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-text">Leave blank if salary will be set later</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input"
+                                               type="checkbox"
+                                               id="isActive"
+                                               th:field="*{isActive}"
+                                               checked>
+                                        <label class="form-check-label" for="isActive">
+                                            Active Employee
+                                        </label>
+                                    </div>
+                                    <div class="form-text">Uncheck if employee is joining later</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="border-top pt-3 mt-4">
+                            <div class="d-flex justify-content-between">
+                                <a th:href="@{/employee/list}" class="btn btn-secondary">
+                                    <i class="bi bi-arrow-left"></i> Back to List
+                                </a>
+                                <div>
+                                    <button type="reset" class="btn btn-outline-secondary me-2">
+                                        <i class="bi bi-arrow-counterclockwise"></i> Reset
+                                    </button>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-check-circle"></i> Save Employee
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .required::after {
+        content: " *";
+        color: red;
+    }
+</style>
+</body>
+</html>

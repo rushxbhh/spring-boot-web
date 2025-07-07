@@ -19,7 +19,8 @@ import java.util.Set;
 @Table( name = "employees")
 
 
-public class EmployeeEntity {
+public class EmployeeEntity extends  AuditableEntity
+{
 
     @Id
     @GeneratedValue( strategy = GenerationType.IDENTITY)

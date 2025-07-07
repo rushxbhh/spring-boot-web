@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Employee List</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-people"></i> Employee Management</h2>
+        <a th:href="@{/employee/add}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Add New Employee
+        </a>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form th:action="@{/employee/list}" method="get" class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" class="form-control" name="search" th:value="${param.search}"
+                           placeholder="Search by name or email">
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" name="department">
+                        <option value="">All Departments</option>
+                        <option th:each="dept : ${departments}"
+                                th:value="${dept.id}"
+                                th:text="${dept.title}"
+                                th:selected="${param.department == dept.id}">Department</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select class="form-select" name="status">
+                        <option value="">All Status</option>
+                        <option value="true" th:selected="${param.status == 'true'}">Active</option>
+                        <option value="false" th:selected="${param.status == 'false'}">Inactive</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-outline-primary me-2">
+                        <i class="bi bi-search"></i> Search
+                    </button>
+                    <a th:href="@{/employee/list}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-clockwise"></i> Reset
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Employee Table -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <span th:text="|Total Employees: ${#lists.size(employees)}|">Total Employees: 0</span>
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Department</th>
+                        <th>Role</th>
+                        <th>Salary</th>
+                        <th>Age</th>
+                        <th>Joining Date</th>
+                        <th>Status</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${#lists.isEmpty(employees)}">
+                        <td colspan="10" class="text-center py-4 text-muted">
+                            <i class="bi bi-inbox display-4"></i>
+                            <p class="mt-2">No employees found</p>
+                        </td>
+                    </tr>
+                    <tr th:each="employee : ${employees}">
+                        <td>
+                            <span class="badge bg-light text-dark" th:text="${employee.employeeid}">001</span>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar bg-primary text-white rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                     style="width: 32px; height: 32px; font-size: 14px;">
+                                    <span th:text="${#strings.substring(employee.name, 0, 1)}">A</span>
+                                </div>
+                                <span th:text="${employee.name}">John Doe</span>
+                            </div>
+                        </td>
+                        <td th:text="${employee.email}">john@example.com</td>
+                        <td>
+                                <span th:if="${employee.department}"
+                                      th:text="${employee.department.title}"
+                                      class="badge bg-info text-white">Department</span>
+                            <span th:unless="${employee.department}" class="text-muted">-</span>
+                        </td>
+                        <td th:text="${employee.role}">Developer</td>
+                        <td>
+                                <span th:if="${employee.salary}"
+                                      th:text="|₹${#numbers.formatDecimal(employee.salary, 0, 'COMMA', 2, 'POINT')}|">₹50,000</span>
+                            <span th:unless="${employee.salary}" class="text-muted">-</span>
+                        </td>
+                        <td th:text="${employee.age}">25</td>
+                        <td th:text="${#dates.format(employee.joiningDate, 'dd-MMM-yyyy')}">01-Jan-2023</td>
+                        <td>
+                            <span th:if="${employee.isActive}" class="badge bg-success">Active</span>
+                            <span th:unless="${employee.isActive}" class="badge bg-danger">Inactive</span>
+                        </td>
+                        <td class="text-center">
+                            <div class="btn-group btn-group-sm">
+                                <a th:href="@{/employee/view/{id}(id=${employee.employeeid})}"
+                                   class="btn btn-outline-info" title="View Details">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a th:href="@{/salary/history/{id}(id=${employee.employeeid})}"
+                                   class="btn btn-outline-success" title="Salary History">
+                                    <i class="bi bi-cash-stack"></i>
+                                </a>
+                                <a th:href="@{/attendance/history/{id}(id=${employee.employeeid})}"
+                                   class="btn btn-outline-warning" title="Attendance History">
+                                    <i class="bi bi-calendar-check"></i>
+                                </a>
+                                <a th:href="@{/employee/edit/{id}(id=${employee.employeeid})}"
+                                   class="btn btn-outline-primary" title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <button type="button" class="btn btn-outline-danger"
+                                        title="Delete"
+                                        data-bs-toggle="modal"
+                                        th:data-bs-target="|#deleteModal${employee.employeeid}|">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+
+                            <!-- Delete Modal -->
+                            <div class="modal fade" th:id="|deleteModal${employee.employeeid}|" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Confirm Delete</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Are you sure you want to delete employee:</p>
+                                            <strong th:text="${employee.name}">Employee Name</strong>
+                                            <p class="text-muted mt-2">This action cannot be undone.</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            <form th:action="@{/employee/delete/{id}(id=${employee.employeeid})}"
+                                                  method="post" class="d-inline">
+                                                <button type="submit" class="btn btn-danger">
+                                                    <i class="bi bi-trash"></i> Delete
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

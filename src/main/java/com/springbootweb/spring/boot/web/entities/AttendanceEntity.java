@@ -1,24 +1,24 @@
 package com.springbootweb.spring.boot.web.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
+
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
+
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+
 import java.time.LocalTime;
 
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "attendances")
 
-public class AttendanceEntity {
+public class AttendanceEntity extends AuditableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -39,9 +39,9 @@ public class AttendanceEntity {
     @Column
     private String remarks;
 
-    @Column(nullable = false)
-    @CreationTimestamp
-    private LocalDateTime createdAt;
+//   @Column(nullable = false)
+//  @CreationTimestamp
+//    private LocalDateTime createdAt;
 
     // ManyToOne relationship with Employee
     @ManyToOne(fetch = FetchType.LAZY)

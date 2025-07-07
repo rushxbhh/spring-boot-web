@@ -19,7 +19,8 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "salaries")
-public class SalaryEntity {
+public class SalaryEntity extends AuditableEntity
+{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,12 +36,9 @@ public class SalaryEntity {
     @Column(nullable = false)
     private Double finalSalary;
 
-    @Column(updatable = false)
-    @CreationTimestamp
-   private LocalDateTime createdAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "employee_id", nullable = false)
+  @ManyToOne(fetch = FetchType.LAZY)
+   @JoinColumn(name = "employee_id", nullable = false)
     private EmployeeEntity employee;
 
     @Override

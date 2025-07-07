@@ -34,19 +34,18 @@ public class SalaryService {
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
 
         SalaryEntity salary = new SalaryEntity();
+        salary.setEmployee(employee);
         salary.setBaseSalary(dto.getBaseSalary());
         salary.setBonuses(dto.getBonuses());
         salary.setDeductions(dto.getDeductions());
-
         salary.setFinalSalary(dto.getBaseSalary() + dto.getBonuses() - dto.getDeductions());
-        salary.setEmployee(employee);
 
         SalaryEntity saved = salaryRepository.save(salary);
 
         // Convert back to DTO and include employee info
-      SalaryDTO  result = modelMapper.map(saved, SalaryDTO.class);
-      result.setEmployeeid(employee.getEmployeeid());
-      return  result;
+        SalaryDTO  result = modelMapper.map(saved, SalaryDTO.class);
+        result.setEmployeeid(employee.getEmployeeid());
+        return  result;
     }
 
 

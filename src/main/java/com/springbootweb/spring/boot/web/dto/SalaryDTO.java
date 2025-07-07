@@ -39,6 +39,6 @@ public class SalaryDTO {
 
    private  Double finalSalary;
 
-    private LocalDateTime createdAt;
+//    private LocalDateTime createdAt;
 }
 
