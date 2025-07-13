@@ -2,13 +2,12 @@ package com.springbootweb.spring.boot.web;
 
 import com.springbootweb.spring.boot.web.clients.ProductClient;
 import com.springbootweb.spring.boot.web.dto.ProductDTO;
-import com.springbootweb.spring.boot.web.entities.User;
+import com.springbootweb.spring.boot.web.entities.UserEntity;
 import com.springbootweb.spring.boot.web.services.JWTService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @SpringBootTest
@@ -39,7 +38,7 @@ class SpringBootWebApplicationTests {
 
 	@Test
 	void generateToken() {
-		User user = new User( 2L , "rushabh" ,"12345");
+		UserEntity user = new UserEntity( 2L , "rushabh" ,"12345");
 		String token = jwtService.generateToken(user);
 		System.out.println(token);
 

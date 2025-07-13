@@ -37,7 +37,6 @@ public class EmployeeDTO {
     @Max(value = 60 , message =  "must below than 60")
     private int age;
 
-
    private SalaryDTO latestsalary;
 
     @JsonProperty(value = "isactive")
@@ -46,8 +45,7 @@ public class EmployeeDTO {
     @PastOrPresent(message = "should not be in the future")
     private LocalDate joining;
 
-    @NotBlank( message = "role must be filled")
-    private String role;
+    private  String username;
 
     private List<SalaryDTO> salaries;
 

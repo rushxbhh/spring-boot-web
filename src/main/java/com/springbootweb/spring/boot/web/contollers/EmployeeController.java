@@ -1,20 +1,15 @@
 package com.springbootweb.spring.boot.web.contollers;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 import com.springbootweb.spring.boot.web.dto.EmployeeDTO;
 import com.springbootweb.spring.boot.web.entities.EmployeeEntity;
-import com.springbootweb.spring.boot.web.entities.User;
 import com.springbootweb.spring.boot.web.services.EmployeeService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -30,7 +25,7 @@ public class EmployeeController {
 
 
     @GetMapping(path = "/{employeeid}")
-   public ResponseEntity<EmployeeDTO> getEmployeeID(@PathVariable(name = "employeeid") long id , @AuthenticationPrincipal User user) {
+   public ResponseEntity<EmployeeDTO> getEmployeeID(@PathVariable(name = "employeeid") long id , @AuthenticationPrincipal EmployeeEntity user) {
 
       //  User user =(User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         log.info("user" , user);

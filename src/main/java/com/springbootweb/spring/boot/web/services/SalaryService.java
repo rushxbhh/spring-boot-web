@@ -28,6 +28,7 @@ public class SalaryService {
         this.salaryRepository = salaryRepository;
         this.employeeRepository = employeeRepository;
     }
+
     public SalaryDTO calculateAndSaveSalary(SalaryDTO dto) {
 
         EmployeeEntity employee = employeeRepository.findById(dto.getEmployeeid())
@@ -39,15 +40,14 @@ public class SalaryService {
         salary.setBonuses(dto.getBonuses());
         salary.setDeductions(dto.getDeductions());
         salary.setFinalSalary(dto.getBaseSalary() + dto.getBonuses() - dto.getDeductions());
-
         SalaryEntity saved = salaryRepository.save(salary);
 
         // Convert back to DTO and include employee info
         SalaryDTO  result = modelMapper.map(saved, SalaryDTO.class);
         result.setEmployeeid(employee.getEmployeeid());
+
         return  result;
     }
-
 
     public Optional<SalaryDTO> getLatestSalary(Long employeeid) {
         Optional<SalaryEntity> latestSalary = salaryRepository.findTopByEmployee_EmployeeidOrderByCreatedAtDesc(employeeid);

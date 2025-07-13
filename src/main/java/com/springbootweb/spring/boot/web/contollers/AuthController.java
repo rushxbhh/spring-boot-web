@@ -1,15 +1,13 @@
 package com.springbootweb.spring.boot.web.contollers;
 
 import com.springbootweb.spring.boot.web.advices.ApiResponse;
-import com.springbootweb.spring.boot.web.dto.LoginDTO;
-import com.springbootweb.spring.boot.web.dto.LoginResponseDTO;
-import com.springbootweb.spring.boot.web.dto.SignUpDTO;
-import com.springbootweb.spring.boot.web.dto.UserDTO;
+import com.springbootweb.spring.boot.web.dto.*;
 import com.springbootweb.spring.boot.web.services.AuthService;
-import com.springbootweb.spring.boot.web.services.UserService;
+import com.springbootweb.spring.boot.web.services.EmployeeService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,12 +25,12 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private  final UserService userService;
+    private  final EmployeeService employeeService;
     private  final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<UserDTO> signup(@RequestBody SignUpDTO signUpDTO){
-        UserDTO userDTO = userService.signup(signUpDTO);
+    public ResponseEntity<SignupResponseDTO> signup(@RequestBody SignUpDTO signUpDTO){
+        SignupResponseDTO userDTO =employeeService.signup(signUpDTO);
         return ResponseEntity.ok(userDTO);
     }
     @PostMapping("/login")
@@ -42,7 +40,7 @@ public class AuthController {
         cookie.setHttpOnly(true);
         response.addCookie(cookie);
         ApiResponse<LoginResponseDTO> apiResponse = new ApiResponse<>(loginResponseDTO);
-        return ResponseEntity.ok(apiResponse);
+        return  ResponseEntity.ok(apiResponse);
     }
 
     @PostMapping("/refresh")
@@ -54,6 +52,14 @@ public class AuthController {
         LoginResponseDTO loginResponseDTO =authService.refreshToken(refreshToken);
         ApiResponse<LoginResponseDTO> apiResponse = new ApiResponse<>(loginResponseDTO);
         return ResponseEntity.ok(apiResponse);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<String>> logout(@RequestBody LogoutRequestDTO logoutRequestDTO) {
+        String refreshToken = logoutRequestDTO.getRefreshToken();
+        String message = authService.logout(refreshToken);
+        ApiResponse<String> apiResponse = new ApiResponse<>(message);
+        return  ResponseEntity.ok(apiResponse);
     }
 
 }

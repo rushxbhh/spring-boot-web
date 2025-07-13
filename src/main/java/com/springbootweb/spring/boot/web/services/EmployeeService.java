@@ -1,8 +1,6 @@
 package com.springbootweb.spring.boot.web.services;
 
-import com.springbootweb.spring.boot.web.dto.AttendanceDTO;
-import com.springbootweb.spring.boot.web.dto.EmployeeDTO;
-import com.springbootweb.spring.boot.web.dto.SalaryDTO;
+import com.springbootweb.spring.boot.web.dto.*;
 import com.springbootweb.spring.boot.web.entities.AttendanceEntity;
 import com.springbootweb.spring.boot.web.entities.EmployeeEntity;
 import com.springbootweb.spring.boot.web.entities.SalaryEntity;
@@ -13,6 +11,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 import com.springbootweb.spring.boot.web.repositories.SalaryRepository;
@@ -24,20 +27,21 @@ import java.util.Optional;
 
 
 @Service
-public class EmployeeService {
+public class EmployeeService implements UserDetailsService {
 
     private  final int size = 5;
     private  final EmployeeRepository employeeRepository;
     private  final ModelMapper modelMapper;
     private final SalaryRepository salaryRepository;
     private final AttendanceRepository attendanceRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public EmployeeService(EmployeeRepository employeeRepository, ModelMapper modelMapper, SalaryRepository salaryRepository, AttendanceRepository attendanceRepository) {
+    public EmployeeService(EmployeeRepository employeeRepository, ModelMapper modelMapper, SalaryRepository salaryRepository, AttendanceRepository attendanceRepository, PasswordEncoder passwordEncoder) {
         this.employeeRepository = employeeRepository;
         this.modelMapper = modelMapper;
-
         this.salaryRepository = salaryRepository;
         this.attendanceRepository = attendanceRepository;
+        this.passwordEncoder = passwordEncoder;
     }
     public EmployeeDTO getEmployeeID(Long employeeid) {
         EmployeeEntity employee = employeeRepository.findById(employeeid)
@@ -116,4 +120,48 @@ public class EmployeeService {
         });
         return modelMapper.map(employeeRepository.save(employeeEntity) , EmployeeDTO.class);
     }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return employeeRepository.findByUsername(username)
+                .orElseThrow(() -> new BadCredentialsException("no such user found"));
+    }
+
+    public EmployeeEntity getUserById(Long userId) {
+        return employeeRepository.findById(userId)
+                .orElseThrow(() -> new BadCredentialsException("no such user found"));
+    }
+
+//    public EmployeeDTO signup(SignUpDTO signUpDTO){
+//        Optional<EmployeeEntity> user = employeeRepository.findByUsername(signUpDTO.getUsername());
+//        if(user.isPresent()) {
+//            throw  new BadCredentialsException(" user with this username already exixts");
+//        }
+//        EmployeeEntity toBeCreatedUser = modelMapper.map(signUpDTO , EmployeeEntity.class);
+//        toBeCreatedUser.setPassword(passwordEncoder.encode(toBeCreatedUser.getPassword()));
+//        EmployeeEntity savedUser = employeeRepository.save(toBeCreatedUser);
+//        return modelMapper.map(savedUser , EmployeeDTO.class);
+//    }
+public SignupResponseDTO signup(SignUpDTO signUpDTO){
+    Optional<EmployeeEntity> user = employeeRepository.findByUsername(signUpDTO.getUsername());
+    if(user.isPresent()) {
+        throw new BadCredentialsException("Username already exists");
+    }
+
+    EmployeeEntity newUser = modelMapper.map(signUpDTO, EmployeeEntity.class);
+
+    newUser.setUsername(signUpDTO.getUsername());
+    newUser.setPassword(passwordEncoder.encode(signUpDTO.getPassword()));
+
+    EmployeeEntity saved = employeeRepository.save(newUser);
+
+    return new SignupResponseDTO(
+            saved.getEmployeeid(),
+            saved.getUsername(),
+            saved.getName(),
+            "Signup successful!"
+    );
+}
+
+
 }

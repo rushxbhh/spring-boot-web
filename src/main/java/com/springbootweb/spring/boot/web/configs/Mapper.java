@@ -30,7 +30,6 @@ public class Mapper {
         return new AuditorAwareImpl();
     }
 
-
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

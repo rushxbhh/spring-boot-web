@@ -8,8 +8,6 @@ public interface ProductClient {
 
     List<ProductDTO> getAllProduct();
 
-
-
     ProductDTO addProduct(ProductDTO productDTO);
 
     ProductDTO getProduct(long l);

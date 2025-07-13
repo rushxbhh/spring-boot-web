@@ -1,26 +1,27 @@
 package com.springbootweb.spring.boot.web.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.springbootweb.spring.boot.web.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
 @Setter
-@EqualsAndHashCode(of = "employeeid")
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @Table( name = "employees")
 
 
-public class EmployeeEntity extends  AuditableEntity
-{
+public class EmployeeEntity extends  AuditableEntity implements UserDetails {
 
     @Id
     @GeneratedValue( strategy = GenerationType.IDENTITY)
@@ -32,7 +33,6 @@ public class EmployeeEntity extends  AuditableEntity
     @JsonProperty(value = "isactive")
     private boolean isactive;
     private LocalDate joining;
-    private String role;
 
     @OneToOne(mappedBy = "manager")
     @JsonIgnore
@@ -51,14 +51,29 @@ public class EmployeeEntity extends  AuditableEntity
     private List<AttendanceEntity> attendances;
 
 
+    @Column(unique = true , nullable = false)
+    private  String username;
+
+    private  String password;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Enumerated(EnumType.STRING)
+    private Set<Role> roles;
+
     @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof EmployeeEntity that)) return false;
-        return Objects.equals(getEmployeeid(), that.getEmployeeid());
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of( new SimpleGrantedAuthority("ROLE_" + this.roles))
+                .stream().collect(Collectors.toSet());
+
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hashCode(getEmployeeid());
+    public String getPassword() {
+        return this.password;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.username;
     }
 }

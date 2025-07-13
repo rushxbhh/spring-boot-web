@@ -1,6 +1,6 @@
 package com.springbootweb.spring.boot.web.services;
 
-import com.springbootweb.spring.boot.web.entities.User;
+import com.springbootweb.spring.boot.web.entities.EmployeeEntity;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -19,13 +19,14 @@ public class JWTService {
     private String jwtSecretKey;
 
     private SecretKey secretKey() {
+
         return Keys.hmacShaKeyFor(jwtSecretKey.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateAccessToken(User user) {
+    public String generateAccessToken(EmployeeEntity user) {
      return
              Jwts.builder()
-                .setSubject(user.getId().toString())
+                .setSubject(user.getEmployeeid().toString())
                 .claim("username",user.getUsername())
                  .claim("roles", Set.of("ADMIN" ,"USER"))
                 .setIssuedAt(new Date())
@@ -34,10 +35,11 @@ public class JWTService {
                 .compact();
 
     }
-    public String generateRefreshToken(User user) {
+      
+    public String generateRefreshToken(EmployeeEntity user) {
         return
                 Jwts.builder()
-                        .setSubject(user.getId().toString())
+                        .setSubject(user.getEmployeeid().toString())
                         .setIssuedAt(new Date())
                         .setExpiration(new Date(System.currentTimeMillis() + 1000L *60*60*24*30*6))
                         .signWith(secretKey())
